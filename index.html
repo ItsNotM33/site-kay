@@ -711,12 +711,13 @@
       }
 
       .word-bubble {
-        min-width: 120px;
-        max-width: 155px;
-        min-height: 58px;
-        padding: 12px 14px;
-        font-size: 14px;
-        border-radius: 22px 22px 22px 7px;
+        min-width: 112px;
+        max-width: 138px;
+        min-height: 52px;
+        padding: 10px 12px;
+        font-size: 13px;
+        border-radius: 20px 20px 20px 7px;
+        line-height: 1.15;
       }
 
       .delete-photo,
@@ -735,6 +736,24 @@
         min-width: 65px;
         height: 32px;
         font-size: 13px;
+      }
+
+      /* Optimisation mobile : moins d'animations lourdes pour éviter les lags */
+      .petal {
+        display: none;
+      }
+
+      .heart,
+      .sparkle {
+        animation-duration: 6s;
+      }
+
+      .butterfly {
+        animation-duration: 7s;
+      }
+
+      .side-gif {
+        background-size: cover;
       }
     }
   </style>
@@ -869,7 +888,7 @@
     };
 
     const maxPhotosPerPage = 8;
-    const maxWordsPerPage = window.innerWidth <= 768 ? 5 : 8;
+    const maxWordsPerPage = window.innerWidth <= 768 ? 4 : 8;
 
     let photos = [];
     let words = [];
@@ -981,7 +1000,7 @@
 
         await addDoc(collection(db, "murMots"), {
           text: text,
-          rotation: randomNumber(-5, 5),
+          rotation: window.innerWidth <= 768 ? randomNumber(-2, 2) : randomNumber(-5, 5),
           x: position.x,
           y: position.y,
           createdAt: serverTimestamp()
@@ -1085,11 +1104,10 @@
       ];
 
       const mobileWordPositions = [
-        {x: 5, y: 4},
-        {x: 48, y: 14},
-        {x: 8, y: 34},
-        {x: 50, y: 52},
-        {x: 24, y: 72}
+        {x: 6, y: 7},
+        {x: 55, y: 25},
+        {x: 8, y: 48},
+        {x: 51, y: 70}
       ];
 
       const isMobile = window.innerWidth <= 768;
