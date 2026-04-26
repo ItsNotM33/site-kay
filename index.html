@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pour Toi & Moi</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .page {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 190px 1fr 190px;
+      background: white;
+    }
+
+    .side-gif {
+      height: 100vh;
+      background-image: url("assets/bordure-coeur.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .side-gif::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 65px;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.92));
+      pointer-events: none;
+    }
+
+    .side-gif:last-child::after {
+      right: auto;
+      left: 0;
+      background: linear-gradient(to left, rgba(255,255,255,0), rgba(255,255,255,0.92));
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: radial-gradient(circle at center, #ffffff 0%, #fff 60%, #fff7fb 100%);
+      overflow: hidden;
+    }
+
+    .section {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #page2, #page3, #page4, #page5 { display: none; }
+
+    .page-label {
+      position: absolute;
+      top: 28px;
+      left: 34px;
+      z-index: 50;
+      display: none;
+      padding: 12px 22px;
+      border-radius: 18px;
+      background: rgba(255, 180, 215, 0.72);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+      box-shadow: 0 10px 35px rgba(255, 90, 170, 0.24);
+      backdrop-filter: blur(12px);
+    }
+
+    .page-label.show { display: block; }
+
+    .title-box {
+      width: 520px;
+      height: 120px;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 50px;
+      font-family: "Brush Script MT", "Segoe Script", cursive;
+      text-shadow: 0 2px 10px rgba(255, 70, 150, 0.55);
+      box-shadow: 0 10px 26px rgba(255, 80, 160, 0.22);
+      background-image: url("assets/bouton-haut.gif");
+      background-size: cover;
+      background-position: center;
+      position: absolute;
+      left: 50%;
+      top: calc(50% - 75px);
+      transform: translate(-50%, -50%);
+      z-index: 5;
+    }
+
+    .enter-btn, .back-btn, .pink-btn {
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      overflow: hidden;
+      background-image: url("assets/bouton-entrer.gif");
+      background-size: cover;
+      background-position: center;
+      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+      box-shadow: 0 8px 22px rgba(255, 80, 160, 0.2);
+      transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      z-index: 10;
+    }
+
+    .enter-btn {
+      width: 230px;
+      height: 66px;
+      font-size: 28px;
+      position: absolute;
+      left: 50%;
+      top: calc(50% + 45px);
+      transform: translate(-50%, -50%);
+    }
+
+    .back-btn {
+      width: 190px;
+      height: 58px;
+      font-size: 24px;
+      position: absolute;
+      left: 50%;
+      bottom: 35px;
+      transform: translateX(-50%);
+    }
+
+    .enter-btn:hover, .back-btn:hover, .pink-btn:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 0 24px rgba(255, 90, 170, 0.45);
+    }
+
+    .menu-container {
+      position: absolute;
+      top: 28px;
+      right: 34px;
+      z-index: 50;
+      display: none;
+    }
+
+    .menu-container.show { display: block; }
+
+    .menu-btn {
+      width: 58px;
+      height: 50px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      background: rgba(255, 150, 200, 0.45);
+      box-shadow: 0 8px 22px rgba(255, 100, 180, 0.22);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .menu-btn span {
+      width: 30px;
+      height: 4px;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 0 8px rgba(255, 80, 170, 0.6);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 64px;
+      right: 0;
+      width: 220px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255, 180, 215, 0.72);
+      box-shadow: 0 10px 35px rgba(255, 90, 170, 0.28);
+      backdrop-filter: blur(12px);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      animation: menuAppear 0.25s ease;
+    }
+
+    .dropdown-menu.active { display: flex; }
+
+    .dropdown-menu button {
+      width: 100%;
+      height: 42px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.45);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+      box-shadow: inset 0 0 12px rgba(255,255,255,0.35);
+    }
+
+    .heart, .sparkle, .butterfly, .petal, .heart-line {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .heart {
+      color: #ff8fc3;
+      filter: drop-shadow(0 0 12px rgba(255, 130, 190, 0.45));
+      animation: heartFloat 5s ease-in-out infinite;
+      opacity: 0.75;
+    }
+
+    .sparkle {
+      color: #ff87bd;
+      animation: sparkle 2.8s ease-in-out infinite;
+      opacity: 0.8;
+    }
+
+    .butterfly {
+      top: 13%;
+      right: 22%;
+      font-size: 58px;
+      filter: drop-shadow(0 0 14px rgba(255, 120, 190, 0.45));
+      animation: butterflyFly 4.8s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    .petal {
+      font-size: 26px;
+      opacity: 0.72;
+      animation: petalFall linear infinite;
+      filter: drop-shadow(0 0 8px rgba(255,140,190,0.25));
+    }
+
+    .heart-line {
+      right: 15%;
+      bottom: 22%;
+      width: 280px;
+      height: 105px;
+      border-bottom: 3px dashed rgba(255, 105, 180, 0.6);
+      border-radius: 50%;
+      transform: rotate(8deg);
+      opacity: 0.7;
+    }
+
+    .heart-line::before {
+      content: "♡";
+      position: absolute;
+      left: 55px;
+      top: 15px;
+      color: #ff78b5;
+      font-size: 70px;
+      transform: rotate(-20deg);
+    }
+
+    .shadow-glow {
+      width: 300px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 110, 180, 0.24);
+      filter: blur(14px);
+      position: absolute;
+      left: 50%;
+      top: calc(50% + 95px);
+      transform: translateX(-50%);
+      animation: glowPulse 3s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    .photo-wall-controls {
+      position: absolute;
+      top: 95px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-input { display: none; }
+
+    .photo-wall {
+      position: absolute;
+      left: 5%;
+      top: 155px;
+      width: 90%;
+      height: calc(100% - 255px);
+      z-index: 8;
+      overflow: hidden;
+    }
+
+    .photo-page {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    .photo-page.active {
+      display: block;
+    }
+
+    .polaroid {
+      position: absolute;
+      width: 160px;
+      height: 205px;
+      background: #fff;
+      padding: 10px 10px 42px 10px;
+      box-shadow: 0 10px 24px rgba(255, 90, 170, 0.18), 0 6px 18px rgba(0,0,0,0.12);
+      border-radius: 3px;
+      animation: polaroidAppear 0.45s ease;
+    }
+
+    .polaroid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 2px;
+    }
+
+    .photo-pagination {
+      position: absolute;
+      left: 50%;
+      bottom: 105px;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px;
+      border-radius: 18px;
+      background: rgba(255, 180, 215, 0.6);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 22px rgba(255, 90, 170, 0.18);
+    }
+
+    .photo-pagination.show {
+      display: flex;
+    }
+
+    .photo-pagination button {
+      width: 38px;
+      height: 34px;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      background: rgba(255, 140, 195, 0.7);
+    }
+
+    .photo-pagination span {
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+    }
+
+    @keyframes menuAppear {
+      from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes polaroidAppear {
+      from { opacity: 0; transform: scale(0.85) rotate(0deg); }
+      to { opacity: 1; }
+    }
+
+    @keyframes heartFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-18px) scale(1.08); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.35; }
+      50% { transform: scale(1.25) rotate(20deg); opacity: 1; }
+    }
+
+    @keyframes butterflyFly {
+      0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+      50% { transform: translate(-28px, 18px) rotate(10deg); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.45; transform: translateX(-50%) scaleX(0.9); }
+      50% { opacity: 0.8; transform: translateX(-50%) scaleX(1.15); }
+    }
+
+    @keyframes petalFall {
+      0% { transform: translateY(-120px) rotate(0deg); opacity: 0; }
+      10% { opacity: .8; }
+      100% { transform: translateY(115vh) translateX(40px) rotate(260deg); opacity: 0; }
+    }
+
+    @media (max-width: 768px) {
+      .page { display: block; position: relative; }
+
+      .side-gif {
+        position: absolute;
+        top: 0;
+        width: 50vw;
+        height: 100vh;
+      }
+
+      .side-gif:first-child { left: 0; }
+      .side-gif:last-child { right: 0; }
+      .side-gif::after { width: 90px; }
+
+      .content {
+        position: absolute;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 2;
+        background: linear-gradient(
+          to right,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,.96) 42%,
+          #fff 50%,
+          rgba(255,255,255,.96) 58%,
+          rgba(255,255,255,0) 100%
+        );
+      }
+
+      .title-box {
+        width: 82vw;
+        max-width: 420px;
+        height: 90px;
+        font-size: 38px;
+        top: 42%;
+      }
+
+      .enter-btn {
+        width: 58vw;
+        max-width: 260px;
+        height: 65px;
+        font-size: 30px;
+        top: 54%;
+      }
+
+      .back-btn {
+        width: 52vw;
+        max-width: 230px;
+        height: 58px;
+        font-size: 24px;
+        bottom: 28px;
+      }
+
+      .page-label {
+        top: 18px;
+        left: 18px;
+        font-size: 15px;
+        padding: 10px 16px;
+      }
+
+      .menu-container {
+        top: 18px;
+        right: 18px;
+      }
+
+      .menu-btn {
+        width: 52px;
+        height: 46px;
+      }
+
+      .dropdown-menu {
+        width: 190px;
+        top: 58px;
+      }
+
+      .shadow-glow { top: 61%; }
+
+      .butterfly {
+        font-size: 42px;
+        right: 16%;
+        top: 14%;
+      }
+
+      .heart-line {
+        right: 6%;
+        bottom: 22%;
+        transform: scale(.75) rotate(8deg);
+      }
+
+      .photo-wall-controls {
+        top: 82px;
+      }
+
+      .photo-wall {
+        left: 3%;
+        width: 94%;
+        top: 145px;
+        height: calc(100% - 245px);
+      }
+
+      .polaroid {
+        width: 112px;
+        height: 145px;
+        padding: 7px 7px 30px 7px;
+      }
+
+      .photo-pagination {
+        bottom: 94px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <aside class="side-gif"></aside>
+
+    <section class="content">
+      <div class="page-label" id="pageLabel">Mot du jour</div>
+
+      <div class="menu-container" id="menuContainer">
+        <button class="menu-btn" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+          <button onclick="goToPage(2)">Mot du jour</button>
+          <button onclick="goToPage(3)">Mur photo</button>
+          <button onclick="goToPage(4)">Mur de mot</button>
+          <button onclick="goToPage(5)">Quizz</button>
+        </div>
+      </div>
+
+      <span class="sparkle" style="top: 12%; left: 18%; font-size: 32px;">✦</span>
+      <span class="sparkle" style="top: 20%; left: 28%; font-size: 18px; animation-delay: .7s;">✦</span>
+      <span class="sparkle" style="top: 14%; right: 14%; font-size: 38px; animation-delay: .3s;">✦</span>
+      <span class="sparkle" style="top: 47%; right: 22%; font-size: 22px; animation-delay: 1s;">✦</span>
+      <span class="sparkle" style="bottom: 23%; left: 22%; font-size: 34px; animation-delay: 1.5s;">✦</span>
+      <span class="sparkle" style="bottom: 29%; right: 16%; font-size: 30px; animation-delay: .9s;">✦</span>
+
+      <span class="heart" style="top: 13%; left: 9%; font-size: 38px;">♥</span>
+      <span class="heart" style="top: 35%; left: 8%; font-size: 28px; animation-delay: 1.2s;">♥</span>
+      <span class="heart" style="bottom: 31%; left: 13%; font-size: 62px; animation-delay: .5s;">♥</span>
+      <span class="heart" style="top: 50%; right: 15%; font-size: 42px; animation-delay: 1.6s;">♥</span>
+
+      <span class="butterfly">🦋</span>
+
+      <span class="petal" style="left:12%; top:-5%; animation-duration:10s; animation-delay:0s;">🌸</span>
+      <span class="petal" style="left:24%; top:-8%; animation-duration:13s; animation-delay:2s;">🌸</span>
+      <span class="petal" style="left:41%; top:-6%; animation-duration:11s; animation-delay:1s;">🌸</span>
+      <span class="petal" style="left:58%; top:-9%; animation-duration:14s; animation-delay:3s;">🌸</span>
+      <span class="petal" style="left:72%; top:-7%; animation-duration:12s; animation-delay:4s;">🌸</span>
+      <span class="petal" style="left:86%; top:-4%; animation-duration:15s; animation-delay:1.5s;">🌸</span>
+
+      <div class="heart-line"></div>
+
+      <div id="page1" class="section">
+        <div class="title-box">Pour Toi &amp; Moi ♥</div>
+        <button class="enter-btn" onclick="goToPage(2)">Entrer</button>
+        <div class="shadow-glow"></div>
+      </div>
+
+      <div id="page2" class="section">
+        <button class="back-btn" onclick="goBack()">Retour</button>
+      </div>
+
+      <div id="page3" class="section">
+        <div class="photo-wall-controls">
+          <label class="pink-btn" style="padding: 16px 22px;">
+            Ajouter une photo
+            <input id="photoInput" class="photo-input" type="file" accept="image/*" multiple>
+          </label>
+        </div>
+
+        <div class="photo-wall" id="photoWall"></div>
+
+        <div class="photo-pagination" id="photoPagination">
+          <button onclick="changePhotoPage(-1)">‹</button>
+          <span id="photoPageIndicator">1 / 1</span>
+          <button onclick="changePhotoPage(1)">›</button>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">Retour</button>
+      </div>
+
+      <div id="page4" class="section">
+        <button class="back-btn" onclick="goBack()">Retour</button>
+      </div>
+
+      <div id="page5" class="section">
+        <button class="back-btn" onclick="goBack()">Retour</button>
+      </div>
+    </section>
+
+    <aside class="side-gif"></aside>
+  </main>
+
+  <script>
+    let currentPage = 1;
+    const historyPages = [];
+
+    const pageNames = {
+      1: "Accueil",
+      2: "Mot du jour",
+      3: "Mur photo",
+      4: "Mur de mot",
+      5: "Quizz"
+    };
+
+    const maxPhotosPerPage = 8;
+    let photos = JSON.parse(localStorage.getItem("murPhotos")) || [];
+    let currentPhotoPage = 0;
+
+    function toggleMenu() {
+      document.getElementById("dropdownMenu").classList.toggle("active");
+    }
+
+    function updateInterface() {
+      const menu = document.getElementById("menuContainer");
+      const dropdown = document.getElementById("dropdownMenu");
+      const label = document.getElementById("pageLabel");
+
+      label.textContent = pageNames[currentPage];
+
+      if (currentPage === 1) {
+        menu.classList.remove("show");
+        label.classList.remove("show");
+        dropdown.classList.remove("active");
+      } else {
+        menu.classList.add("show");
+        label.classList.add("show");
+      }
+
+      if (currentPage === 3) {
+        renderPhotoWall();
+      }
+    }
+
+    function goToPage(pageNumber) {
+      if (pageNumber === currentPage) {
+        document.getElementById("dropdownMenu").classList.remove("active");
+        return;
+      }
+
+      historyPages.push(currentPage);
+      document.getElementById("page" + currentPage).style.display = "none";
+      document.getElementById("page" + pageNumber).style.display = "block";
+      currentPage = pageNumber;
+
+      document.getElementById("dropdownMenu").classList.remove("active");
+      updateInterface();
+    }
+
+    function goBack() {
+      if (historyPages.length === 0) return;
+
+      const previousPage = historyPages.pop();
+      document.getElementById("page" + currentPage).style.display = "none";
+      document.getElementById("page" + previousPage).style.display = "block";
+      currentPage = previousPage;
+
+      document.getElementById("dropdownMenu").classList.remove("active");
+      updateInterface();
+    }
+
+    document.getElementById("photoInput").addEventListener("change", function(event) {
+      const files = Array.from(event.target.files);
+
+      files.forEach(file => {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          photos.push({
+            src: e.target.result,
+            rotation: randomNumber(-14, 14),
+            x: randomNumber(0, 78),
+            y: randomNumber(0, 62)
+          });
+
+          localStorage.setItem("murPhotos", JSON.stringify(photos));
+          currentPhotoPage = Math.floor((photos.length - 1) / maxPhotosPerPage);
+          renderPhotoWall();
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      event.target.value = "";
+    });
+
+    function renderPhotoWall() {
+      const wall = document.getElementById("photoWall");
+      const pagination = document.getElementById("photoPagination");
+      const indicator = document.getElementById("photoPageIndicator");
+
+      wall.innerHTML = "";
+
+      const totalPages = Math.max(1, Math.ceil(photos.length / maxPhotosPerPage));
+      if (currentPhotoPage > totalPages - 1) currentPhotoPage = totalPages - 1;
+
+      for (let i = 0; i < totalPages; i++) {
+        const page = document.createElement("div");
+        page.className = "photo-page" + (i === currentPhotoPage ? " active" : "");
+
+        const start = i * maxPhotosPerPage;
+        const pagePhotos = photos.slice(start, start + maxPhotosPerPage);
+
+        pagePhotos.forEach(photo => {
+          const polaroid = document.createElement("div");
+          polaroid.className = "polaroid";
+          polaroid.style.left = photo.x + "%";
+          polaroid.style.top = photo.y + "%";
+          polaroid.style.transform = "rotate(" + photo.rotation + "deg)";
+
+          const img = document.createElement("img");
+          img.src = photo.src;
+
+          polaroid.appendChild(img);
+          page.appendChild(polaroid);
+        });
+
+        wall.appendChild(page);
+      }
+
+      indicator.textContent = (currentPhotoPage + 1) + " / " + totalPages;
+      pagination.classList.toggle("show", totalPages > 1);
+    }
+
+    function changePhotoPage(direction) {
+      const totalPages = Math.max(1, Math.ceil(photos.length / maxPhotosPerPage));
+      currentPhotoPage += direction;
+
+      if (currentPhotoPage < 0) currentPhotoPage = totalPages - 1;
+      if (currentPhotoPage >= totalPages) currentPhotoPage = 0;
+
+      renderPhotoWall();
+    }
+
+    function randomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    updateInterface();
+  </script>
+</body>
+</html>
