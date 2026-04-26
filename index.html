@@ -64,9 +64,19 @@
       inset: 0;
       width: 100%;
       height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(12px) scale(0.985);
+      transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
+      pointer-events: none;
     }
 
-    #page2, #page3, #page4, #page5 { display: none; }
+    .section.active-section {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
 
     .page-label {
       position: absolute;
@@ -107,6 +117,7 @@
       top: calc(50% - 75px);
       transform: translate(-50%, -50%);
       z-index: 5;
+      animation: softFloat 4s ease-in-out infinite;
     }
 
     .enter-btn, .back-btn, .pink-btn {
@@ -121,7 +132,7 @@
       background-position: center;
       text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
       box-shadow: 0 8px 22px rgba(255, 80, 160, 0.2);
-      transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      transition: filter 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
       z-index: 10;
     }
 
@@ -145,9 +156,22 @@
       transform: translateX(-50%);
     }
 
-    .enter-btn:hover, .back-btn:hover, .pink-btn:hover {
+    .enter-btn:hover {
       filter: brightness(1.08);
       box-shadow: 0 0 24px rgba(255, 90, 170, 0.45);
+      transform: translate(-50%, -50%) scale(1.04);
+    }
+
+    .back-btn:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 0 24px rgba(255, 90, 170, 0.45);
+      transform: translateX(-50%) scale(1.04);
+    }
+
+    .pink-btn:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 0 24px rgba(255, 90, 170, 0.45);
+      transform: scale(1.04);
     }
 
     .menu-container {
@@ -174,6 +198,12 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .menu-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 24px rgba(255, 90, 170, 0.45);
     }
 
     .menu-btn span {
@@ -214,6 +244,12 @@
       font-weight: bold;
       text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
       box-shadow: inset 0 0 12px rgba(255,255,255,0.35);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .dropdown-menu button:hover {
+      transform: scale(1.04);
+      background: rgba(255, 255, 255, 0.65);
     }
 
     .heart, .sparkle, .butterfly, .petal, .heart-line {
@@ -305,7 +341,7 @@
       left: 5%;
       top: 155px;
       width: 90%;
-      height: calc(100% - 255px);
+      height: calc(100% - 290px);
       z-index: 8;
       overflow: hidden;
     }
@@ -313,10 +349,17 @@
     .photo-page {
       position: absolute;
       inset: 0;
-      display: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(20px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
     }
 
-    .photo-page.active { display: block; }
+    .photo-page.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
 
     .polaroid {
       position: absolute;
@@ -327,7 +370,7 @@
       box-shadow: 0 10px 24px rgba(255, 90, 170, 0.18), 0 6px 18px rgba(0,0,0,0.12);
       border-radius: 3px;
       animation: polaroidAppear 0.45s ease;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
     .polaroid:hover {
@@ -370,40 +413,56 @@
       transform: scale(1);
     }
 
-    .photo-pagination {
+    .photo-pages-buttons {
       position: absolute;
       left: 50%;
       bottom: 105px;
       transform: translateX(-50%);
       z-index: 30;
       display: none;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 14px;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 80%;
+      padding: 8px 12px;
       border-radius: 18px;
       background: rgba(255, 180, 215, 0.6);
       backdrop-filter: blur(10px);
       box-shadow: 0 8px 22px rgba(255, 90, 170, 0.18);
     }
 
-    .photo-pagination.show { display: flex; }
+    .photo-pages-buttons.show {
+      display: flex;
+    }
 
-    .photo-pagination button {
-      width: 38px;
-      height: 34px;
+    .photo-page-btn {
+      min-width: 76px;
+      height: 36px;
+      padding: 0 12px;
       border: none;
-      border-radius: 12px;
+      border-radius: 13px;
       color: white;
-      font-size: 20px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
       background: rgba(255, 140, 195, 0.7);
+      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+      transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    .photo-pagination span {
-      color: white;
-      font-weight: bold;
-      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+    .photo-page-btn:hover {
+      transform: scale(1.06);
+      background: rgba(255, 120, 185, 0.85);
+    }
+
+    .photo-page-btn.active {
+      background: rgba(255, 95, 170, 0.95);
+      box-shadow: 0 0 16px rgba(255, 90, 170, 0.35);
+    }
+
+    @keyframes softFloat {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-7px); }
     }
 
     @keyframes menuAppear {
@@ -538,7 +597,7 @@
         left: 3%;
         width: 94%;
         top: 145px;
-        height: calc(100% - 245px);
+        height: calc(100% - 265px);
       }
 
       .polaroid {
@@ -551,8 +610,15 @@
         opacity: 0;
       }
 
-      .photo-pagination {
+      .photo-pages-buttons {
         bottom: 94px;
+        max-width: 90%;
+      }
+
+      .photo-page-btn {
+        min-width: 65px;
+        height: 32px;
+        font-size: 13px;
       }
     }
   </style>
@@ -603,7 +669,7 @@
 
       <div class="heart-line"></div>
 
-      <div id="page1" class="section">
+      <div id="page1" class="section active-section">
         <div class="title-box">Pour Toi &amp; Moi ♥</div>
         <button class="enter-btn" onclick="goToPage(2)">Entrer</button>
         <div class="shadow-glow"></div>
@@ -623,11 +689,7 @@
 
         <div class="photo-wall" id="photoWall"></div>
 
-        <div class="photo-pagination" id="photoPagination">
-          <button onclick="changePhotoPage(-1)">‹</button>
-          <span id="photoPageIndicator">1 / 1</span>
-          <button onclick="changePhotoPage(1)">›</button>
-        </div>
+        <div class="photo-pages-buttons" id="photoPagesButtons"></div>
 
         <button class="back-btn" onclick="goBack()">Retour</button>
       </div>
@@ -691,8 +753,10 @@
       }
 
       historyPages.push(currentPage);
-      document.getElementById("page" + currentPage).style.display = "none";
-      document.getElementById("page" + pageNumber).style.display = "block";
+
+      document.getElementById("page" + currentPage).classList.remove("active-section");
+      document.getElementById("page" + pageNumber).classList.add("active-section");
+
       currentPage = pageNumber;
 
       document.getElementById("dropdownMenu").classList.remove("active");
@@ -703,8 +767,10 @@
       if (historyPages.length === 0) return;
 
       const previousPage = historyPages.pop();
-      document.getElementById("page" + currentPage).style.display = "none";
-      document.getElementById("page" + previousPage).style.display = "block";
+
+      document.getElementById("page" + currentPage).classList.remove("active-section");
+      document.getElementById("page" + previousPage).classList.add("active-section");
+
       currentPage = previousPage;
 
       document.getElementById("dropdownMenu").classList.remove("active");
@@ -761,12 +827,13 @@
 
     function renderPhotoWall() {
       const wall = document.getElementById("photoWall");
-      const pagination = document.getElementById("photoPagination");
-      const indicator = document.getElementById("photoPageIndicator");
+      const buttonsContainer = document.getElementById("photoPagesButtons");
 
       wall.innerHTML = "";
+      buttonsContainer.innerHTML = "";
 
       const totalPages = Math.max(1, Math.ceil(photos.length / maxPhotosPerPage));
+
       if (currentPhotoPage > totalPages - 1) currentPhotoPage = totalPages - 1;
 
       for (let i = 0; i < totalPages; i++) {
@@ -818,8 +885,23 @@
         wall.appendChild(page);
       }
 
-      indicator.textContent = (currentPhotoPage + 1) + " / " + totalPages;
-      pagination.classList.toggle("show", totalPages > 1);
+      if (totalPages > 1) {
+        buttonsContainer.classList.add("show");
+
+        for (let i = 0; i < totalPages; i++) {
+          const btn = document.createElement("button");
+          btn.className = "photo-page-btn" + (i === currentPhotoPage ? " active" : "");
+          btn.textContent = "Page " + (i + 1);
+          btn.onclick = function() {
+            currentPhotoPage = i;
+            renderPhotoWall();
+          };
+
+          buttonsContainer.appendChild(btn);
+        }
+      } else {
+        buttonsContainer.classList.remove("show");
+      }
     }
 
     function deletePhoto(index) {
@@ -830,16 +912,6 @@
 
       const totalPages = Math.max(1, Math.ceil(photos.length / maxPhotosPerPage));
       if (currentPhotoPage > totalPages - 1) currentPhotoPage = totalPages - 1;
-
-      renderPhotoWall();
-    }
-
-    function changePhotoPage(direction) {
-      const totalPages = Math.max(1, Math.ceil(photos.length / maxPhotosPerPage));
-      currentPhotoPage += direction;
-
-      if (currentPhotoPage < 0) currentPhotoPage = totalPages - 1;
-      if (currentPhotoPage >= totalPages) currentPhotoPage = 0;
 
       renderPhotoWall();
     }
