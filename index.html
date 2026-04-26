@@ -322,7 +322,8 @@
       z-index: 3;
     }
 
-    .photo-wall-controls {
+    .photo-wall-controls,
+    .word-wall-controls {
       position: absolute;
       top: 95px;
       left: 50%;
@@ -336,7 +337,26 @@
 
     .photo-input { display: none; }
 
-    .photo-status {
+    .word-input {
+      width: 360px;
+      max-width: 52vw;
+      height: 52px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 18px;
+      outline: none;
+      background: rgba(255, 220, 235, 0.78);
+      color: #d94d88;
+      font-size: 17px;
+      font-weight: bold;
+      box-shadow: 0 8px 22px rgba(255, 90, 170, 0.16);
+      backdrop-filter: blur(10px);
+    }
+
+    .word-input::placeholder { color: rgba(217, 77, 136, 0.55); }
+
+    .photo-status,
+    .word-status {
       position: absolute;
       top: 155px;
       left: 50%;
@@ -349,7 +369,8 @@
       text-shadow: 0 1px 8px rgba(255, 170, 210, 0.5);
     }
 
-    .photo-wall {
+    .photo-wall,
+    .word-wall {
       position: absolute;
       left: 5%;
       top: 175px;
@@ -359,7 +380,8 @@
       overflow: hidden;
     }
 
-    .photo-page {
+    .photo-page,
+    .word-page {
       position: absolute;
       inset: 0;
       opacity: 0;
@@ -368,7 +390,8 @@
       transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
     }
 
-    .photo-page.active {
+    .photo-page.active,
+    .word-page.active {
       opacity: 1;
       visibility: visible;
       transform: translateX(0);
@@ -401,7 +424,43 @@
       user-select: none;
     }
 
-    .delete-photo {
+    .word-bubble {
+      position: absolute;
+      min-width: 160px;
+      max-width: 240px;
+      min-height: 75px;
+      padding: 18px 20px;
+      border-radius: 28px 28px 28px 8px;
+      background: linear-gradient(135deg, rgba(255, 180, 215, 0.88), rgba(255, 220, 238, 0.9));
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1.25;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(255, 70, 150, 0.55);
+      box-shadow: 0 10px 26px rgba(255, 90, 170, 0.22);
+      backdrop-filter: blur(10px);
+      animation: bubbleAppear 0.45s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      overflow-wrap: break-word;
+    }
+
+    .word-bubble::after {
+      content: "♥";
+      position: absolute;
+      right: 14px;
+      bottom: 8px;
+      font-size: 18px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .word-bubble:hover {
+      z-index: 50;
+      box-shadow: 0 14px 30px rgba(255, 90, 170, 0.3);
+    }
+
+    .delete-photo,
+    .delete-word {
       position: absolute;
       top: -12px;
       right: -12px;
@@ -421,12 +480,15 @@
     }
 
     .polaroid:hover .delete-photo,
-    .polaroid.show-delete .delete-photo {
+    .polaroid.show-delete .delete-photo,
+    .word-bubble:hover .delete-word,
+    .word-bubble.show-delete .delete-word {
       opacity: 1;
       transform: scale(1);
     }
 
-    .photo-pages-buttons {
+    .photo-pages-buttons,
+    .word-pages-buttons {
       position: absolute;
       left: 50%;
       bottom: 105px;
@@ -444,9 +506,13 @@
       box-shadow: 0 8px 22px rgba(255, 90, 170, 0.18);
     }
 
-    .photo-pages-buttons.show { display: flex; }
+    .photo-pages-buttons.show,
+    .word-pages-buttons.show {
+      display: flex;
+    }
 
-    .photo-page-btn {
+    .photo-page-btn,
+    .word-page-btn {
       min-width: 76px;
       height: 36px;
       padding: 0 12px;
@@ -461,12 +527,14 @@
       transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    .photo-page-btn:hover {
+    .photo-page-btn:hover,
+    .word-page-btn:hover {
       transform: scale(1.06);
       background: rgba(255, 120, 185, 0.85);
     }
 
-    .photo-page-btn.active {
+    .photo-page-btn.active,
+    .word-page-btn.active {
       background: rgba(255, 95, 170, 0.95);
       box-shadow: 0 0 16px rgba(255, 90, 170, 0.35);
     }
@@ -482,6 +550,11 @@
     }
 
     @keyframes polaroidAppear {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; }
+    }
+
+    @keyframes bubbleAppear {
       from { opacity: 0; transform: scale(0.85); }
       to { opacity: 1; }
     }
@@ -602,15 +675,29 @@
         transform: scale(.75) rotate(8deg);
       }
 
-      .photo-wall-controls { top: 82px; }
+      .photo-wall-controls,
+      .word-wall-controls {
+        top: 82px;
+        width: 92%;
+        gap: 8px;
+      }
 
-      .photo-status {
+      .word-input {
+        max-width: 58vw;
+        width: 58vw;
+        height: 48px;
+        font-size: 14px;
+      }
+
+      .photo-status,
+      .word-status {
         top: 140px;
         width: 90%;
         font-size: 13px;
       }
 
-      .photo-wall {
+      .photo-wall,
+      .word-wall {
         left: 3%;
         width: 94%;
         top: 165px;
@@ -623,14 +710,28 @@
         padding: 7px 7px 30px 7px;
       }
 
-      .delete-photo { opacity: 0; }
+      .word-bubble {
+        min-width: 110px;
+        max-width: 150px;
+        min-height: 62px;
+        padding: 14px 16px;
+        font-size: 14px;
+        border-radius: 22px 22px 22px 7px;
+      }
 
-      .photo-pages-buttons {
+      .delete-photo,
+      .delete-word {
+        opacity: 0;
+      }
+
+      .photo-pages-buttons,
+      .word-pages-buttons {
         bottom: 94px;
         max-width: 90%;
       }
 
-      .photo-page-btn {
+      .photo-page-btn,
+      .word-page-btn {
         min-width: 65px;
         height: 32px;
         font-size: 13px;
@@ -710,6 +811,15 @@
       </div>
 
       <div id="page4" class="section">
+        <div class="word-wall-controls">
+          <input id="wordInput" class="word-input" type="text" maxlength="120" placeholder="Écris un mot doux..." />
+          <button class="pink-btn" style="height:52px; padding: 0 20px;" onclick="addWord()">Ajouter</button>
+        </div>
+
+        <div class="word-status" id="wordStatus">Chargement du mur de mot...</div>
+        <div class="word-wall" id="wordWall"></div>
+        <div class="word-pages-buttons" id="wordPagesButtons"></div>
+
         <button class="back-btn" onclick="goBack()">Retour</button>
       </div>
 
@@ -759,10 +869,15 @@
     };
 
     const maxPhotosPerPage = 8;
+    const maxWordsPerPage = 8;
+
     let photos = [];
+    let words = [];
     let currentPhotoPage = 0;
+    let currentWordPage = 0;
     let longPressTimer = null;
     let photosLoadedOnce = false;
+    let wordsLoadedOnce = false;
 
     window.toggleMenu = function() {
       document.getElementById("dropdownMenu").classList.toggle("active");
@@ -785,6 +900,7 @@
       }
 
       if (currentPage === 3) renderPhotoWall();
+      if (currentPage === 4) renderWordWall();
     }
 
     window.goToPage = function(pageNumber) {
@@ -829,7 +945,7 @@
           const compressedImage = await compressImage(file);
           const pageIndex = Math.floor(photos.length / maxPhotosPerPage);
           const indexInPage = photos.length % maxPhotosPerPage;
-          const position = getNonOverlappingPosition(indexInPage);
+          const position = getNonOverlappingPosition(indexInPage, "photo");
 
           await addDoc(collection(db, "murPhotos"), {
             src: compressedImage,
@@ -848,6 +964,43 @@
 
       event.target.value = "";
       setPhotoStatus("");
+    });
+
+    window.addWord = async function() {
+      const input = document.getElementById("wordInput");
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      setWordStatus("Ajout du mot...");
+
+      try {
+        const pageIndex = Math.floor(words.length / maxWordsPerPage);
+        const indexInPage = words.length % maxWordsPerPage;
+        const position = getNonOverlappingPosition(indexInPage, "word");
+
+        await addDoc(collection(db, "murMots"), {
+          text: text,
+          rotation: randomNumber(-7, 7),
+          x: position.x,
+          y: position.y,
+          createdAt: serverTimestamp()
+        });
+
+        currentWordPage = pageIndex;
+        input.value = "";
+        setWordStatus("");
+      } catch (error) {
+        console.error(error);
+        alert("Erreur pendant l'ajout du mot.");
+        setWordStatus("");
+      }
+    };
+
+    document.getElementById("wordInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        window.addWord();
+      }
     });
 
     function listenPhotos() {
@@ -876,28 +1029,75 @@
       });
     }
 
+    function listenWords() {
+      const q = query(collection(db, "murMots"), orderBy("createdAt", "asc"));
+
+      onSnapshot(q, function(snapshot) {
+        words = [];
+
+        snapshot.forEach(function(docSnap) {
+          words.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
+        });
+
+        wordsLoadedOnce = true;
+        setWordStatus("");
+
+        const totalPages = Math.max(1, Math.ceil(words.length / maxWordsPerPage));
+        if (currentWordPage > totalPages - 1) currentWordPage = totalPages - 1;
+
+        renderWordWall();
+      }, function(error) {
+        console.error(error);
+        setWordStatus("Erreur de chargement Firebase.");
+      });
+    }
+
     function setPhotoStatus(text) {
       const status = document.getElementById("photoStatus");
       status.textContent = text;
     }
 
-    function getNonOverlappingPosition(index) {
-      const desktopPositions = [
+    function setWordStatus(text) {
+      const status = document.getElementById("wordStatus");
+      status.textContent = text;
+    }
+
+    function getNonOverlappingPosition(index, type) {
+      const desktopPhotoPositions = [
         {x: 4, y: 4}, {x: 28, y: 2}, {x: 54, y: 5}, {x: 76, y: 3},
         {x: 10, y: 43}, {x: 34, y: 45}, {x: 58, y: 42}, {x: 78, y: 46}
       ];
 
-      const mobilePositions = [
+      const mobilePhotoPositions = [
         {x: 2, y: 2}, {x: 37, y: 4},
         {x: 8, y: 32}, {x: 48, y: 34},
         {x: 3, y: 62}, {x: 43, y: 64},
         {x: 22, y: 18}, {x: 28, y: 50}
       ];
 
-      const isMobile = window.innerWidth <= 768;
-      const positions = isMobile ? mobilePositions : desktopPositions;
+      const desktopWordPositions = [
+        {x: 5, y: 5}, {x: 34, y: 3}, {x: 65, y: 6},
+        {x: 14, y: 34}, {x: 45, y: 36}, {x: 72, y: 33},
+        {x: 24, y: 66}, {x: 56, y: 64}
+      ];
 
-      return positions[index % positions.length];
+      const mobileWordPositions = [
+        {x: 4, y: 3}, {x: 48, y: 5},
+        {x: 12, y: 28}, {x: 50, y: 31},
+        {x: 5, y: 56}, {x: 48, y: 59},
+        {x: 25, y: 17}, {x: 25, y: 45}
+      ];
+
+      const isMobile = window.innerWidth <= 768;
+
+      if (type === "word") {
+        return (isMobile ? mobileWordPositions : desktopWordPositions)[index % 8];
+      }
+
+      return (isMobile ? mobilePhotoPositions : desktopPhotoPositions)[index % 8];
     }
 
     function renderPhotoWall() {
@@ -947,19 +1147,7 @@
             await deletePhoto(photo.id);
           };
 
-          polaroid.addEventListener("touchstart", function() {
-            longPressTimer = setTimeout(() => {
-              polaroid.classList.add("show-delete");
-            }, 650);
-          });
-
-          polaroid.addEventListener("touchend", function() {
-            clearTimeout(longPressTimer);
-          });
-
-          polaroid.addEventListener("touchmove", function() {
-            clearTimeout(longPressTimer);
-          });
+          addLongPressDelete(polaroid);
 
           polaroid.appendChild(img);
           polaroid.appendChild(deleteBtn);
@@ -969,23 +1157,106 @@
         wall.appendChild(page);
       }
 
+      renderPageButtons(buttonsContainer, totalPages, currentPhotoPage, "photo");
+    }
+
+    function renderWordWall() {
+      const wall = document.getElementById("wordWall");
+      const buttonsContainer = document.getElementById("wordPagesButtons");
+
+      wall.innerHTML = "";
+      buttonsContainer.innerHTML = "";
+
+      if (!wordsLoadedOnce) {
+        setWordStatus("Chargement du mur de mot...");
+        return;
+      }
+
+      if (words.length === 0) {
+        setWordStatus("Aucun mot pour le moment.");
+      } else {
+        setWordStatus("");
+      }
+
+      const totalPages = Math.max(1, Math.ceil(words.length / maxWordsPerPage));
+
+      if (currentWordPage > totalPages - 1) currentWordPage = totalPages - 1;
+
+      for (let i = 0; i < totalPages; i++) {
+        const page = document.createElement("div");
+        page.className = "word-page" + (i === currentWordPage ? " active" : "");
+
+        const start = i * maxWordsPerPage;
+        const pageWords = words.slice(start, start + maxWordsPerPage);
+
+        pageWords.forEach((word) => {
+          const bubble = document.createElement("div");
+          bubble.className = "word-bubble";
+          bubble.style.left = word.x + "%";
+          bubble.style.top = word.y + "%";
+          bubble.style.transform = "rotate(" + word.rotation + "deg)";
+          bubble.textContent = word.text;
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-word";
+          deleteBtn.innerHTML = "🗑";
+          deleteBtn.onclick = async function(e) {
+            e.stopPropagation();
+            await deleteWord(word.id);
+          };
+
+          addLongPressDelete(bubble);
+
+          bubble.appendChild(deleteBtn);
+          page.appendChild(bubble);
+        });
+
+        wall.appendChild(page);
+      }
+
+      renderPageButtons(buttonsContainer, totalPages, currentWordPage, "word");
+    }
+
+    function renderPageButtons(container, totalPages, currentIndex, type) {
       if (totalPages > 1) {
-        buttonsContainer.classList.add("show");
+        container.classList.add("show");
 
         for (let i = 0; i < totalPages; i++) {
           const btn = document.createElement("button");
-          btn.className = "photo-page-btn" + (i === currentPhotoPage ? " active" : "");
+          btn.className = (type === "word" ? "word-page-btn" : "photo-page-btn") + (i === currentIndex ? " active" : "");
           btn.textContent = "Page " + (i + 1);
+
           btn.onclick = function() {
-            currentPhotoPage = i;
-            renderPhotoWall();
+            if (type === "word") {
+              currentWordPage = i;
+              renderWordWall();
+            } else {
+              currentPhotoPage = i;
+              renderPhotoWall();
+            }
           };
 
-          buttonsContainer.appendChild(btn);
+          container.appendChild(btn);
         }
       } else {
-        buttonsContainer.classList.remove("show");
+        container.classList.remove("show");
       }
+    }
+
+    function addLongPressDelete(element) {
+      element.addEventListener("touchstart", function() {
+        longPressTimer = setTimeout(() => {
+          element.classList.add("show-delete");
+        }, 650);
+      });
+
+      element.addEventListener("touchend", function() {
+        clearTimeout(longPressTimer);
+      });
+
+      element.addEventListener("touchmove", function() {
+        clearTimeout(longPressTimer);
+      });
     }
 
     async function deletePhoto(photoId) {
@@ -993,6 +1264,17 @@
 
       try {
         await deleteDoc(doc(db, "murPhotos", photoId));
+      } catch (error) {
+        console.error(error);
+        alert("Erreur pendant la suppression.");
+      }
+    }
+
+    async function deleteWord(wordId) {
+      if (!confirm("Supprimer ce mot ?")) return;
+
+      try {
+        await deleteDoc(doc(db, "murMots", wordId));
       } catch (error) {
         console.error(error);
         alert("Erreur pendant la suppression.");
@@ -1044,6 +1326,7 @@
     }
 
     listenPhotos();
+    listenWords();
     updateInterface();
   </script>
 </body>
