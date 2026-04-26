@@ -316,9 +316,7 @@
       display: none;
     }
 
-    .photo-page.active {
-      display: block;
-    }
+    .photo-page.active { display: block; }
 
     .polaroid {
       position: absolute;
@@ -329,6 +327,12 @@
       box-shadow: 0 10px 24px rgba(255, 90, 170, 0.18), 0 6px 18px rgba(0,0,0,0.12);
       border-radius: 3px;
       animation: polaroidAppear 0.45s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .polaroid:hover {
+      z-index: 50;
+      box-shadow: 0 12px 28px rgba(255, 90, 170, 0.28), 0 8px 22px rgba(0,0,0,0.18);
     }
 
     .polaroid img {
@@ -337,6 +341,33 @@
       object-fit: cover;
       display: block;
       border-radius: 2px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .delete-photo {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: rgba(255, 110, 170, 0.92);
+      color: white;
+      font-size: 17px;
+      box-shadow: 0 6px 16px rgba(255, 90, 170, 0.35);
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 80;
+    }
+
+    .polaroid:hover .delete-photo,
+    .polaroid.show-delete .delete-photo {
+      opacity: 1;
+      transform: scale(1);
     }
 
     .photo-pagination {
@@ -355,9 +386,7 @@
       box-shadow: 0 8px 22px rgba(255, 90, 170, 0.18);
     }
 
-    .photo-pagination.show {
-      display: flex;
-    }
+    .photo-pagination.show { display: flex; }
 
     .photo-pagination button {
       width: 38px;
@@ -383,7 +412,7 @@
     }
 
     @keyframes polaroidAppear {
-      from { opacity: 0; transform: scale(0.85) rotate(0deg); }
+      from { opacity: 0; transform: scale(0.85); }
       to { opacity: 1; }
     }
 
@@ -503,9 +532,7 @@
         transform: scale(.75) rotate(8deg);
       }
 
-      .photo-wall-controls {
-        top: 82px;
-      }
+      .photo-wall-controls { top: 82px; }
 
       .photo-wall {
         left: 3%;
@@ -518,6 +545,10 @@
         width: 112px;
         height: 145px;
         padding: 7px 7px 30px 7px;
+      }
+
+      .delete-photo {
+        opacity: 0;
       }
 
       .photo-pagination {
@@ -628,6 +659,7 @@
     const maxPhotosPerPage = 8;
     let photos = JSON.parse(localStorage.getItem("murPhotos")) || [];
     let currentPhotoPage = 0;
+    let longPressTimer = null;
 
     function toggleMenu() {
       document.getElementById("dropdownMenu").classList.toggle("active");
@@ -649,9 +681,7 @@
         label.classList.add("show");
       }
 
-      if (currentPage === 3) {
-        renderPhotoWall();
-      }
+      if (currentPage === 3) renderPhotoWall();
     }
 
     function goToPage(pageNumber) {
@@ -688,15 +718,19 @@
         const reader = new FileReader();
 
         reader.onload = function(e) {
+          const pageIndex = Math.floor(photos.length / maxPhotosPerPage);
+          const indexInPage = photos.length % maxPhotosPerPage;
+          const position = getNonOverlappingPosition(indexInPage);
+
           photos.push({
             src: e.target.result,
-            rotation: randomNumber(-14, 14),
-            x: randomNumber(0, 78),
-            y: randomNumber(0, 62)
+            rotation: randomNumber(-10, 10),
+            x: position.x,
+            y: position.y
           });
 
           localStorage.setItem("murPhotos", JSON.stringify(photos));
-          currentPhotoPage = Math.floor((photos.length - 1) / maxPhotosPerPage);
+          currentPhotoPage = pageIndex;
           renderPhotoWall();
         };
 
@@ -705,6 +739,25 @@
 
       event.target.value = "";
     });
+
+    function getNonOverlappingPosition(index) {
+      const desktopPositions = [
+        {x: 4, y: 4}, {x: 28, y: 2}, {x: 54, y: 5}, {x: 76, y: 3},
+        {x: 10, y: 43}, {x: 34, y: 45}, {x: 58, y: 42}, {x: 78, y: 46}
+      ];
+
+      const mobilePositions = [
+        {x: 2, y: 2}, {x: 37, y: 4},
+        {x: 8, y: 32}, {x: 48, y: 34},
+        {x: 3, y: 62}, {x: 43, y: 64},
+        {x: 22, y: 18}, {x: 28, y: 50}
+      ];
+
+      const isMobile = window.innerWidth <= 768;
+      const positions = isMobile ? mobilePositions : desktopPositions;
+
+      return positions[index % positions.length];
+    }
 
     function renderPhotoWall() {
       const wall = document.getElementById("photoWall");
@@ -723,7 +776,9 @@
         const start = i * maxPhotosPerPage;
         const pagePhotos = photos.slice(start, start + maxPhotosPerPage);
 
-        pagePhotos.forEach(photo => {
+        pagePhotos.forEach((photo, index) => {
+          const realIndex = start + index;
+
           const polaroid = document.createElement("div");
           polaroid.className = "polaroid";
           polaroid.style.left = photo.x + "%";
@@ -733,7 +788,30 @@
           const img = document.createElement("img");
           img.src = photo.src;
 
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-photo";
+          deleteBtn.innerHTML = "🗑";
+          deleteBtn.onclick = function(e) {
+            e.stopPropagation();
+            deletePhoto(realIndex);
+          };
+
+          polaroid.addEventListener("touchstart", function() {
+            longPressTimer = setTimeout(() => {
+              polaroid.classList.add("show-delete");
+            }, 650);
+          });
+
+          polaroid.addEventListener("touchend", function() {
+            clearTimeout(longPressTimer);
+          });
+
+          polaroid.addEventListener("touchmove", function() {
+            clearTimeout(longPressTimer);
+          });
+
           polaroid.appendChild(img);
+          polaroid.appendChild(deleteBtn);
           page.appendChild(polaroid);
         });
 
@@ -742,6 +820,18 @@
 
       indicator.textContent = (currentPhotoPage + 1) + " / " + totalPages;
       pagination.classList.toggle("show", totalPages > 1);
+    }
+
+    function deletePhoto(index) {
+      if (!confirm("Supprimer cette photo ?")) return;
+
+      photos.splice(index, 1);
+      localStorage.setItem("murPhotos", JSON.stringify(photos));
+
+      const totalPages = Math.max(1, Math.ceil(photos.length / maxPhotosPerPage));
+      if (currentPhotoPage > totalPages - 1) currentPhotoPage = totalPages - 1;
+
+      renderPhotoWall();
     }
 
     function changePhotoPage(direction) {
