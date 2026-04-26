@@ -711,10 +711,10 @@
       }
 
       .word-bubble {
-        min-width: 110px;
-        max-width: 150px;
-        min-height: 62px;
-        padding: 14px 16px;
+        min-width: 120px;
+        max-width: 155px;
+        min-height: 58px;
+        padding: 12px 14px;
         font-size: 14px;
         border-radius: 22px 22px 22px 7px;
       }
@@ -869,7 +869,7 @@
     };
 
     const maxPhotosPerPage = 8;
-    const maxWordsPerPage = 8;
+    const maxWordsPerPage = window.innerWidth <= 768 ? 5 : 8;
 
     let photos = [];
     let words = [];
@@ -981,7 +981,7 @@
 
         await addDoc(collection(db, "murMots"), {
           text: text,
-          rotation: randomNumber(-7, 7),
+          rotation: randomNumber(-5, 5),
           x: position.x,
           y: position.y,
           createdAt: serverTimestamp()
@@ -1085,19 +1085,22 @@
       ];
 
       const mobileWordPositions = [
-        {x: 4, y: 3}, {x: 48, y: 5},
-        {x: 12, y: 28}, {x: 50, y: 31},
-        {x: 5, y: 56}, {x: 48, y: 59},
-        {x: 25, y: 17}, {x: 25, y: 45}
+        {x: 5, y: 4},
+        {x: 48, y: 14},
+        {x: 8, y: 34},
+        {x: 50, y: 52},
+        {x: 24, y: 72}
       ];
 
       const isMobile = window.innerWidth <= 768;
 
       if (type === "word") {
-        return (isMobile ? mobileWordPositions : desktopWordPositions)[index % 8];
+        const positions = isMobile ? mobileWordPositions : desktopWordPositions;
+        return positions[index % positions.length];
       }
 
-      return (isMobile ? mobilePhotoPositions : desktopPhotoPositions)[index % 8];
+      const positions = isMobile ? mobilePhotoPositions : desktopPhotoPositions;
+      return positions[index % positions.length];
     }
 
     function renderPhotoWall() {
